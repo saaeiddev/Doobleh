@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { artists, getArtist } from '@/data/artists';
+import { getVerifiedPortrait } from '@/data/portraits';
 import WorkModalGrid from '@/components/WorkModal';
 
 export function generateStaticParams() {
@@ -11,12 +12,17 @@ export default async function ArtistPage({ params }: { params: Promise<{ id: str
   const artist = getArtist(id);
   if (!artist) notFound();
 
+  const verified = getVerifiedPortrait(artist.id);
+  const portrait = artist.portrait || verified?.url;
+  const portraitSource = artist.portraitSource || verified?.source;
+  const portraitCredit = artist.portraitCredit || verified?.credit;
+
   return (
     <main className="artist-profile">
       <div className="container artist-profile-grid">
         <div className="profile-portrait glass">
-          {artist.portrait ? <img src={artist.portrait} alt={`پرتره واقعی ${artist.nameFa}`} /> : <div className="identity-fallback">{artist.nameEn.split(' ').map(n=>n[0]).join('').slice(0,3)}</div>}
-          {artist.portraitCredit && <div className="photo-credit">Photo: {artist.portraitCredit}</div>}
+          {portrait ? <img src={portrait} alt={`پرتره واقعی ${artist.nameFa}`} referrerPolicy="no-referrer" /> : <div className="identity-fallback">{artist.nameEn.split(' ').map(n=>n[0]).join('').slice(0,3)}</div>}
+          {portraitCredit && <div className="photo-credit">Photo: {portraitCredit}</div>}
         </div>
 
         <section>
@@ -26,7 +32,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ id: str
           <div className="artist-role" style={{fontSize:'.9rem'}}>{artist.career}</div>
           <p className="profile-bio">{artist.bio}</p>
           <a className="source-link" href={artist.bioSource} target="_blank" rel="noreferrer">Biography source ↗</a>
-          {artist.portraitSource && <a className="source-link" style={{marginRight:8}} href={artist.portraitSource} target="_blank" rel="noreferrer">Portrait license/source ↗</a>}
+          {portraitSource && <a className="source-link" style={{marginRight:8}} href={portraitSource} target="_blank" rel="noreferrer">Portrait license/source ↗</a>}
 
           <h2 className="works-heading">آثار و نقش‌های منتخب</h2>
           <WorkModalGrid works={artist.works.map(work => ({...work, artistNameFa: artist.nameFa, artistNameEn: artist.nameEn}))} />
