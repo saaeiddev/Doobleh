@@ -120,3 +120,45 @@ button{cursor:pointer}
 @media(max-width:700px){.nav-links{display:none}.nav-side{font-size:.62rem}.hero{padding-top:105px}.hero-title{font-size:clamp(3.1rem,15vw,5.2rem)}.hero-copy{font-size:.88rem}.enter-hint{margin-top:42vh}.artist-grid,.work-grid,.all-work-grid{grid-template-columns:1fr}.artist-card{min-height:420px}.artist-image{height:255px}.page-hero{padding-top:125px}.profile-portrait{min-height:390px}.profile-portrait img,.profile-portrait .identity-fallback{height:390px}.page-card{padding:20px}.modal{padding:24px 20px}.timeline-row{margin-right:45px}.timeline:before{right:18px}.timeline-row:before{right:-33px}.section-copy{font-size:.92rem}}
 
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+
+/* A playful, dimensional recording studio. */
+:root{--bg:#261650;--bg2:#382267;--bg3:#45317d;--gold:#ffd17d;--amber:#ffc076;--amber2:#ffe0a1;--red:#ff73ae;--muted:#e0d5f5}
+body{background:radial-gradient(ellipse at 12% 30%,#633a91,transparent 50%),linear-gradient(155deg,#33205f,#211342 70%)}
+.nav-shell{background:rgba(51,29,91,.72);border-color:#ffffff35;box-shadow:0 8px 0 #150e352e,0 18px 40px #1c103e40}
+.nav-links a:hover{background:#ffffff20;color:#fff}
+.hero{height:960px;min-height:100svh;max-height:1200px;background:radial-gradient(ellipse at 50% 53%,#d9b2da 0,#ad83c6 20%,transparent 47%),radial-gradient(ellipse at 10% 40%,#40c4c0 0,transparent 45%),radial-gradient(ellipse at 95% 25%,#fd91b7 0,transparent 50%),linear-gradient(145deg,#6a58ac,#65408a 60%,#493079)}
+.hero-canvas{inset:220px 0 95px;z-index:3;cursor:grab}
+.hero-canvas:active{cursor:grabbing}
+.hero-vignette{background:linear-gradient(180deg,#34205b15,transparent 75%,#33205f);z-index:1}
+.hero-content{position:absolute;top:118px;left:16px;right:16px;max-width:none;pointer-events:none}
+.hero-title{font-size:clamp(3rem,5.4vw,5.1rem);line-height:1.2;margin:10px 0 0;color:#fff8ec;text-shadow:0 4px 0 #623d8d,0 14px 25px #41256850}
+.hero-subtitle{color:#fff2cc;font-size:.7rem;letter-spacing:.35em;margin:0}
+.hero-copy{color:#fff4fc;font-size:.95rem;margin:10px 0 0}
+.hero-content button{pointer-events:auto!important;position:absolute!important;top:685px;}
+.enter-hint{margin:0;background:linear-gradient(130deg,#fff2c5,#ffd18d);padding:15px 28px;border-radius:22px;border:1px solid #fff6dd;box-shadow:0 7px 0 #b57557,0 15px 35px #3c20584d;text-shadow:none;transition:transform .2s}
+.hero-content button:hover .enter-hint{transform:translateY(-4px)}
+.enter-hint strong{color:#53324f;letter-spacing:.12em}.enter-hint span{color:#694652}
+.hero-scroll{color:#f6e5fa;bottom:25px}
+.studio-orbits{position:absolute;inset:280px 0 120px;pointer-events:none;perspective:900px;z-index:2}
+.studio-orbits i{position:absolute;left:50%;top:45%;width:740px;height:410px;border:1px solid #fff4d159;border-radius:50%;transform:translate(-50%,-50%) rotateX(55deg) rotateZ(-18deg);box-shadow:0 0 35px #ffc2e42b}
+.studio-orbits i:nth-child(2){width:920px;height:550px;transform:translate(-50%,-50%) rotateX(55deg) rotateZ(15deg);border-color:#94fff575}
+.studio-orbits i:nth-child(3){width:590px;height:280px;top:85%;background:#ffd8dd22;border-color:#ffd9bf88}
+.portrait-orbit{position:absolute;inset:0;pointer-events:none;z-index:5;max-width:1400px;margin:auto;perspective:1100px}
+.orbit-position{position:absolute;width:155px;pointer-events:auto}
+.orbit-0{left:13%;top:31%;transform:rotate(-9deg)}.orbit-1{right:13%;top:31%;transform:rotate(9deg)}
+.orbit-2{left:6%;top:53%;transform:rotate(6deg)}.orbit-3{right:6%;top:53%;transform:rotate(-6deg)}
+.orbit-4{left:20%;top:70%;transform:rotate(-7deg)}.orbit-5{right:20%;top:70%;transform:rotate(7deg)}
+.orbit-card{display:block;padding:7px;border-radius:21px;background:linear-gradient(150deg,#fff4ebfa,#f1d5eddd);border:1px solid #fff9;box-shadow:0 6px 0 #ba85b3,0 20px 40px #35234c45;animation:portrait-float 6s ease-in-out infinite;transition:scale .25s,box-shadow .25s;transform-style:preserve-3d}
+.orbit-card:hover,.orbit-card:focus-visible{scale:1.08;box-shadow:0 8px 0 #f2b583,0 25px 45px #35234c70;animation-play-state:paused}
+.orbit-card img{display:block;width:100%;height:128px;object-fit:cover;object-position:center 25%;border-radius:15px;background:#9476a2}
+.orbit-caption{display:block;text-align:center;padding:8px 0 3px;color:#472d5a}.orbit-caption strong{display:block;font-size:.85rem}.orbit-caption small{display:block;direction:ltr;font-family:Manrope,sans-serif;font-size:.51rem;margin-top:3px}
+@keyframes portrait-float{0%,100%{transform:translateY(0) rotateY(-5deg)}50%{transform:translateY(-12px) rotateY(5deg)}}
+.world{background:radial-gradient(ellipse at 0 40%,#258e9633,transparent 55%),radial-gradient(ellipse at 100% 70%,#ff87a933,transparent 60%);padding-top:80px}
+.artist-card{display:block;background:linear-gradient(150deg,#5c4388,#382361);border-color:#d6b8ff60;box-shadow:0 7px 0 #1b123a80,0 20px 50px #1c0e3440}
+.artist-card:nth-child(3n){border-color:#7ee1db77}.artist-image img{filter:saturate(1.08)}
+.glass{background:linear-gradient(140deg,#634385aa,#352052bb)}
+a:focus-visible,button:focus-visible{outline:3px solid #affff2!important;outline-offset:6px}
+@media(min-width:1500px){.hero-canvas{left:10%;right:10%}}
+@media(max-width:900px){.orbit-position{width:130px}.orbit-card img{height:105px}.orbit-0{left:7%}.orbit-1{right:7%}.orbit-2{left:3%}.orbit-3{right:3%}.orbit-4{left:13%}.orbit-5{right:13%}}
+@media(max-width:600px){.hero{height:900px;min-height:900px}.hero-content{top:113px}.hero-title{font-size:3.2rem}.hero-subtitle{font-size:.54rem;letter-spacing:.25em}.hero-copy{max-width:290px;font-size:.78rem;line-height:1.8}.hero-canvas{inset:250px -80px 200px}.orbit-position{width:99px}.orbit-card{padding:5px;border-radius:15px}.orbit-card img{height:84px;border-radius:10px}.orbit-caption strong{font-size:.66rem}.orbit-caption small{font-size:.4rem}.orbit-0{top:30%;left:3%}.orbit-1{top:30%;right:3%}.orbit-2{top:49%;left:2%}.orbit-3{top:49%;right:2%}.orbit-4{top:67%;left:10%}.orbit-5{top:67%;right:10%}.hero-content button{top:660px}.enter-hint{padding:13px 20px}.enter-hint strong{font-size:.65rem}.studio-orbits{opacity:.55}.hero-scroll{bottom:22px}}
+@media(prefers-reduced-motion:reduce){.orbit-card,.hero-scroll{animation:none!important}}

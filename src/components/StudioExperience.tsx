@@ -1,13 +1,17 @@
 'use client';
 
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import Link from 'next/link';
+import { getVerifiedPortrait } from '@/data/portraits';
 import { useEffect, useState } from 'react';
 import MicrophoneScene from './MicrophoneScene';
 import ArtistGrid from './ArtistGrid';
 import { artists } from '@/data/artists';
 
 export default function StudioExperience() {
+  const reducedMotion = !!useReducedMotion();
   const [loading, setLoading] = useState(true);
+  const portraitArtists = artists.filter(a => a.portrait || getVerifiedPortrait(a.id)).slice(0, 6);
   const [entered, setEntered] = useState(false);
 
   useEffect(() => {
@@ -18,14 +22,14 @@ export default function StudioExperience() {
   const enter = () => {
     if (entered) return;
     setEntered(true);
-    window.setTimeout(() => document.getElementById('world-of-voices')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 1750);
+    window.setTimeout(() => document.getElementById('world-of-voices')?.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' }), reducedMotion ? 0 : 700);
   };
 
   return (
     <>
       <AnimatePresence>
         {loading && (
-          <motion.div className="modal-backdrop" style={{zIndex:150, background:'#090c18'}} exit={{opacity:0}} transition={{duration:.6}}>
+          <motion.div className="modal-backdrop" style={{zIndex:150, background:'#342075'}} exit={{opacity:0}} transition={{duration:.6}}>
             <motion.div initial={{opacity:0,scale:.96}} animate={{opacity:1,scale:1}} style={{textAlign:'center'}}>
               <div className="wave" style={{height:40,justifyContent:'center',transform:'scale(2.1)'}}><i/><i/><i/><i/><i/></div>
               <div style={{marginTop:28,fontSize:'1.15rem'}}>صداها در حال زنده شدن هستند…</div>
@@ -36,15 +40,24 @@ export default function StudioExperience() {
       </AnimatePresence>
 
       <section className="hero" id="home">
-        <MicrophoneScene entered={entered} onEnter={enter} />
+        <MicrophoneScene entered={entered} onEnter={enter} reducedMotion={reducedMotion} />
+        <div className="studio-orbits" aria-hidden="true"><i/><i/><i/></div>
+        <div className="portrait-orbit">
+          {portraitArtists.map((artist, index) => <div className={`orbit-position orbit-${index}`} key={artist.id}>
+            <Link href={`/artists/${artist.id}`} className="orbit-card" style={{animationDelay: `${index * -.8}s`}}>
+              <img src={artist.portrait || getVerifiedPortrait(artist.id)?.url} alt={artist.nameFa} referrerPolicy="no-referrer" />
+              <span className="orbit-caption"><strong>{artist.nameFa}</strong><small>{artist.nameEn} ↗</small></span>
+            </Link>
+          </div>)}
+        </div>
         <div className="hero-vignette" />
         <motion.div className="hero-content" initial={{opacity:0,y:18}} animate={{opacity:loading?0:1,y:0}} transition={{delay:.25,duration:.9}}>
-          <div className="hero-subtitle">THE ETERNAL VOICES</div>
+          <div className="hero-subtitle">DOOBLEH · THE MAGIC OF VOICE</div>
           <h1 className="hero-title">صدای ماندگار</h1>
-          <p className="hero-copy">موزه‌ای سینمایی برای صداهایی که جهان داستان‌ها را به فارسی نزدیک‌تر کردند.</p>
+          <p className="hero-copy">یک میکروفون، هزار خاطره؛ به دنیای رنگارنگ صداها خوش آمدی.</p>
           <button onClick={enter} style={{all:'unset',cursor:'pointer'}} aria-label="ورود به دنیای صداها">
             <div className="enter-hint">
-              <strong>{entered ? 'ENTERING THE WORLD OF VOICES…' : 'CLICK THE MICROPHONE'}</strong>
+              <strong>{entered ? 'ENTERING THE WORLD OF VOICES…' : 'EXPLORE THE VOICES ↗'}</strong>
               <span>{entered ? 'دوربین در حال ورود به آرشیو است' : 'ورود به دنیای صداها'}</span>
             </div>
           </button>

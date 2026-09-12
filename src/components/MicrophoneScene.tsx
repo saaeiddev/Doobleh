@@ -1,110 +1,72 @@
 'use client';
 
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Sparkles } from '@react-three/drei';
-import { useMemo, useRef, useState } from 'react';
+import { Environment, Lightformer, RoundedBox, ContactShadows } from '@react-three/drei';
+import { useRef } from 'react';
 import * as THREE from 'three';
 
-type Props = { entered: boolean; onEnter: () => void };
+type Props = { entered: boolean; onEnter: () => void; reducedMotion: boolean };
+const chrome = { color: '#e5e3dc', metalness: 1, roughness: .22 };
+const brass = { color: '#d9ad64', metalness: .92, roughness: .28 };
 
-function Mic({ entered, onEnter }: Props) {
+function VintageMic({ entered, onEnter, reducedMotion }: Props) {
   const group = useRef<THREE.Group>(null);
-  const ring = useRef<THREE.Mesh>(null);
-  const [hovered, setHovered] = useState(false);
-  const target = useMemo(() => new THREE.Vector3(), []);
-
-  useFrame((state, delta) => {
+  useFrame(({ pointer, clock }, delta) => {
     if (!group.current) return;
-    const t = state.clock.elapsedTime;
-    const pointerX = state.pointer.x * .16;
-    const pointerY = state.pointer.y * .08;
-    group.current.rotation.y = THREE.MathUtils.lerp(group.current.rotation.y, hovered ? pointerX * 1.5 : pointerX, .06);
-    group.current.rotation.x = THREE.MathUtils.lerp(group.current.rotation.x, -pointerY, .06);
-    group.current.position.y = THREE.MathUtils.lerp(group.current.position.y, entered ? -2.3 : Math.sin(t * .8) * .035 - .15, .035);
-    group.current.rotation.z = entered ? Math.sin(t * 14) * .015 * Math.max(0, 1 - delta * 10) : Math.sin(t * .65) * .006;
-    if (ring.current) ring.current.rotation.z += delta * (hovered ? 1.15 : .28);
-
-    target.set(state.pointer.x * .16, state.pointer.y * .08, entered ? 3.65 : 6.3);
-    state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, target.x, .035);
-    state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, target.y, .035);
-    state.camera.position.z = THREE.MathUtils.lerp(state.camera.position.z, target.z, entered ? .055 : .03);
-    state.camera.lookAt(0, -.15, 0);
+    const t = reducedMotion ? 0 : clock.elapsedTime;
+    group.current.rotation.y = THREE.MathUtils.damp(group.current.rotation.y, -.22 + (reducedMotion ? 0 : pointer.x * .38 + Math.sin(t * .35) * .055), 4, delta);
+    group.current.rotation.x = THREE.MathUtils.damp(group.current.rotation.x, reducedMotion ? 0 : pointer.y * -.06, 4, delta);
+    group.current.position.z = THREE.MathUtils.damp(group.current.position.z, entered ? .6 : 0, 3, delta);
   });
-
-  return (
-    <group ref={group} onPointerEnter={() => setHovered(true)} onPointerLeave={() => setHovered(false)} onClick={onEnter}>
-      <group position={[0, .92, 0]} scale={hovered ? 1.025 : 1}>
-        <mesh scale={[1.06, 1.23, .82]}>
-          <sphereGeometry args={[1, 48, 48]} />
-          <meshStandardMaterial color="#111216" metalness={.72} roughness={.24} />
-        </mesh>
-        <mesh scale={[1.085, 1.255, .845]}>
-          <sphereGeometry args={[1, 26, 20]} />
-          <meshStandardMaterial color="#dca85a" wireframe metalness={.9} roughness={.18} emissive="#8d5d22" emissiveIntensity={hovered ? .38 : .17} transparent opacity={.78} />
-        </mesh>
-      </group>
-
-      <mesh position={[0, -.32, 0]} scale={[.78, 1.15, .65]}>
-        <cylinderGeometry args={[.82, .72, 1.8, 48]} />
-        <meshStandardMaterial color="#0b0c10" metalness={.85} roughness={.2} />
-      </mesh>
-
-      <mesh ref={ring} position={[0, -.28, .54]} rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[.42, .048, 18, 64]} />
-        <meshStandardMaterial color="#ffc875" emissive="#ff9b2f" emissiveIntensity={hovered ? 2.4 : 1.2} metalness={.7} roughness={.15} />
-      </mesh>
-
-      <mesh position={[0, -1.37, 0]}>
-        <cylinderGeometry args={[.16, .16, .62, 32]} />
-        <meshStandardMaterial color="#dca85a" metalness={.92} roughness={.14} />
-      </mesh>
-      <mesh position={[0, -1.71, 0]}>
-        <cylinderGeometry args={[1.12, .82, .18, 64]} />
-        <meshStandardMaterial color="#111216" metalness={.86} roughness={.18} />
-      </mesh>
-      <mesh position={[0, -1.63, 0]}>
-        <torusGeometry args={[.91, .055, 16, 64]} />
-        <meshStandardMaterial color="#dca85a" emissive="#6e431d" emissiveIntensity={.35} metalness={1} roughness={.15} />
-      </mesh>
+  return <group ref={group} position={[0,-.1,0]} onClick={onEnter}>
+    {/* Cast iron weighted foot, stepped brass collar and telescopic chrome stand. */}
+    <mesh position={[0,-1.73,0]}><cylinderGeometry args={[.66,.76,.14,80]}/><meshStandardMaterial color="#242b36" metalness={.75} roughness={.3}/></mesh>
+    <mesh position={[0,-1.64,0]}><cylinderGeometry args={[.58,.66,.07,80]}/><meshStandardMaterial {...chrome}/></mesh>
+    <mesh position={[0,-1.53,0]}><cylinderGeometry args={[.19,.28,.18,48]}/><meshStandardMaterial {...brass}/></mesh>
+    <mesh position={[0,-1.04,0]}><cylinderGeometry args={[.083,.105,.88,40]}/><meshStandardMaterial {...chrome}/></mesh>
+    <mesh position={[0,-.75,0]}><cylinderGeometry args={[.13,.13,.18,40]}/><meshStandardMaterial {...brass}/></mesh>
+    {/* Continuous U-shaped yoke with two pivot screws. */}
+    <RoundedBox args={[1.42,.15,.19]} radius={.07} position={[0,-.62,0]}><meshStandardMaterial {...chrome}/></RoundedBox>
+    {[-1,1].map(side=><group key={side}>
+      <RoundedBox args={[.14,1.26,.19]} radius={.06} position={[side*.65,-.05,0]}><meshStandardMaterial {...chrome}/></RoundedBox>
+      <mesh position={[side*.66,.49,0]} rotation={[0,0,Math.PI/2]}><cylinderGeometry args={[.14,.14,.25,40]}/><meshStandardMaterial {...brass}/></mesh>
+      <mesh position={[side*.8,.49,0]} rotation={[0,0,Math.PI/2]}><cylinderGeometry args={[.105,.105,.035,32]}/><meshStandardMaterial {...chrome}/></mesh>
+    </group>)}
+    <group position={[0,.57,0]} rotation={[-.08,0,0]}>
+      <RoundedBox args={[1.08,1.72,.72]} radius={.27} smoothness={8}><meshStandardMaterial {...chrome}/></RoundedBox>
+      {/* Black acoustic cloth is recessed beneath individually modelled curved ribs. */}
+      {[-1,1].map(face=><group key={face} position={[0,0,face*.355]}>
+        <RoundedBox args={[.9,1.44,.035]} radius={.2} smoothness={6}><meshStandardMaterial color="#17202a" roughness={.91}/></RoundedBox>
+        {Array.from({length:35},(_,i)=><mesh key={'wire'+i} position={[(i-17)*.023,0,face*.023]}><boxGeometry args={[.005,1.12,.005]}/><meshStandardMaterial color="#6b7479" metalness={.65} roughness={.64}/></mesh>)}
+        {Array.from({length:12},(_,i)=>{
+          const y=(i-5.5)*.108;
+          const width=.92-Math.pow(Math.abs(y)/.72,4)*.25;
+          return <RoundedBox key={i} args={[width,.046,.075]} radius={.022} smoothness={3} position={[0,y,face*.044]}><meshStandardMaterial {...chrome}/></RoundedBox>;
+        })}
+        <RoundedBox args={[.074,1.37,.085]} radius={.025} position={[0,0,face*.063]}><meshStandardMaterial {...brass}/></RoundedBox>
+      </group>)}
+      <RoundedBox args={[.3,.13,.025]} radius={.025} position={[0,-.70,.36]}><meshStandardMaterial {...brass}/></RoundedBox>
+      {[-1,1].map(x=><mesh key={x} position={[x*.105,-.70,.38]}><sphereGeometry args={[.015,12,12]}/><meshStandardMaterial color="#252b32" metalness={.6}/></mesh>)}
+      {Array.from({length:5},(_,i)=><RoundedBox key={i} args={[.033,.018,.34]} radius={.008} position={[(i-2)*.12,.858,0]}><meshStandardMaterial color="#29323a" roughness={.6}/></RoundedBox>)}
     </group>
-  );
-}
-
-function FilmFrames() {
-  const group = useRef<THREE.Group>(null);
-  useFrame(({ clock }) => {
-    if (!group.current) return;
-    group.current.rotation.y = Math.sin(clock.elapsedTime * .15) * .035;
-  });
-  const frames = [-3.9,-2.7,-1.5,1.5,2.7,3.9];
-  return <group ref={group} position={[0,.25,-2.9]}>
-    {frames.map((x,i) => (
-      <mesh key={x} position={[x, (i%2? .2:-.1), Math.abs(x)*-.04]} rotation={[0, x*.04, x*.018]}>
-        <boxGeometry args={[1.25,1.75,.05]} />
-        <meshStandardMaterial color={i%2?'#1a1d2c':'#211a1d'} emissive={i%2?'#171f35':'#351720'} emissiveIntensity={.35} metalness={.25} roughness={.55} />
-      </mesh>
-    ))}
+    <mesh position={[.12,-1.78,-.4]} rotation={[Math.PI/2,0,.4]}><torusGeometry args={[.72,.022,10,80,Math.PI*1.7]}/><meshStandardMaterial color="#282a34" roughness={.8}/></mesh>
   </group>;
 }
 
-export default function MicrophoneScene({ entered, onEnter }: Props) {
-  return (
-    <div className="hero-canvas" aria-hidden="true">
-      <Canvas dpr={[1, 1.7]} camera={{ position: [0,0,6.3], fov: 42 }} gl={{ antialias: true, alpha: true }}>
-        <color attach="background" args={['#090c18']} />
-        <fog attach="fog" args={['#090c18', 6, 13]} />
-        <ambientLight intensity={.55} />
-        <spotLight position={[0,5,4]} angle={.5} penumbra={.8} intensity={entered?4.8:3.3} color="#ffc875" />
-        <pointLight position={[-4,1,2]} intensity={2.2} color="#8d2537" />
-        <pointLight position={[4,1,1]} intensity={1.7} color="#ffb55a" />
-        <FilmFrames />
-        <Mic entered={entered} onEnter={onEnter} />
-        <Sparkles count={entered ? 180 : 85} size={2.4} speed={entered ? .65 : .22} scale={[10,7,5]} color="#ffc875" opacity={.8} />
-        <mesh position={[0,-1.84,0]} rotation={[-Math.PI/2,0,0]}>
-          <circleGeometry args={[5.5,72]} />
-          <meshStandardMaterial color="#0c0f1b" metalness={.55} roughness={.28} />
-        </mesh>
-      </Canvas>
-    </div>
-  );
+export default function MicrophoneScene(props: Props) {
+  return <div className="hero-canvas" role="img" aria-label="میکروفون سه‌بعدی کلاسیک استودیویی با بدنه کرومی و پایه فلزی">
+    <Canvas dpr={[1,1.7]} camera={{position:[0,.3,6.8],fov:39}} gl={{antialias:true,alpha:true}}>
+      <ambientLight intensity={.8}/>
+      <spotLight position={[-3,6,5]} intensity={65} angle={.55} penumbra={1} color="#fff0d6"/>
+      <pointLight position={[3,1,3]} intensity={14} color="#ff82bd"/>
+      <pointLight position={[-3,0,2]} intensity={12} color="#70eedf"/>
+      <Environment resolution={128}>
+        <Lightformer position={[-3,2,4]} scale={[2,6,1]} intensity={4} color="#ffffff"/>
+        <Lightformer position={[3,1,2]} scale={[1,5,1]} intensity={3} color="#ffe8b9"/>
+        <Lightformer position={[0,5,-2]} rotation={[Math.PI/2,0,0]} scale={[5,5,1]} intensity={3}/>
+      </Environment>
+      <VintageMic {...props}/>
+      <ContactShadows position={[0,-1.91,0]} opacity={.45} scale={7} blur={2.8} far={4} frames={1}/>
+    </Canvas>
+  </div>;
 }
